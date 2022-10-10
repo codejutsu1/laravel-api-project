@@ -6,7 +6,7 @@
             </a>
         </x-slot>
 
-        <form method="POST" action="{{ route('register') }}">
+        <form method="POST" action="{{ route('register.api') }}">
             @csrf
 
             <!-- Name -->

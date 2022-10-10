@@ -49,6 +49,15 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        // return redirect(RouteServiceProvider::HOME);
+        return $this->registered($request, $user)
+                    ?: redirect($this->redirectPath());
+    }
+
+    public function registered(Request $request, $user)
+    {
+        $user->generateToken();
+
+        return response()->json(['data' => $user->toArray()], 201);
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Passport\HasApiTokens;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -29,12 +30,31 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request)
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 
+    public function authenticate(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+ 
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            $user->generateToken();
+
+            return response()->json([
+                'data' => $user->toArray(),
+            ]);
+        }
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
+    }
     /**
      * Destroy an authenticated session.
      *
@@ -43,12 +63,20 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request)
     {
-        Auth::guard('web')->logout();
+        // Auth::guard('web')->logout();
+        $user = Auth::guard('api')->user();
 
-        $request->session()->invalidate();
+        if($user)
+        {
+            $user->api_token = null;
+            $user->save();
+        }
 
-        $request->session()->regenerateToken();
+        // $request->session()->invalidate();
 
-        return redirect('/');
+        // $request->session()->regenerateToken();
+
+        // return redirect('/');
+        return response()->json(['data' => 'User logged out'], 200);
     }
 }
