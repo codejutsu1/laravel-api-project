@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-
+use App\Http\Controllers\ArticleController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,10 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::resource('articles', ArticleController::class);
-
 });
-
-Route::resource('articles', ArticleController::class);
 
 Route::post('register', [RegisteredUserController::class, 'store'])->name('register.api');
 
