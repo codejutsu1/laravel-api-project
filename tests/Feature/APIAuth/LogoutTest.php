@@ -21,9 +21,9 @@ class LogoutTest extends TestCase
         ]);
 
         $token = $user->generateToken();
-        $headers = ['Authorization' => "Bearer $token"];
+        $headers = ['Authorization' => "Bearer ".$token, "Accept" => 'application/json'];
 
-        $this->getJson('/api/articles', [], $headers)->assertStatus(200);
+        $this->getJson('/api/articles', $headers)->assertStatus(200);
         $this->postJson('/api/logout', [], $headers)->assertStatus(200);
 
         $user = User::find($user->id);
