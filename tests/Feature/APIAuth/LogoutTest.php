@@ -14,16 +14,16 @@ class LogoutTest extends TestCase
 
     public function test_user_is_logged_out_properly()
     {
-        $this->withoutExceptionHandling();
+        // $this->withoutExceptionHandling();
 
         $user = User::factory()->create([
             'email' =>  'user@test.com'
         ]);
 
         $token = $user->generateToken();
-        $headers = ['Authorization' => "Bearer ".$token, "Accept" => 'application/json'];
+        $headers = ['Authorization' => "Bearer $token"];
 
-        $this->getJson('/api/articles', $headers)->assertStatus(200);
+        $this->getJson('/api/articles', [], $headers)->assertStatus(200);
         $this->postJson('/api/logout', [], $headers)->assertStatus(200);
 
         $user = User::find($user->id);
